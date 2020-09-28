@@ -21,6 +21,7 @@ class Orders with ChangeNotifier {
   }
 
   void addOrder(List<CartItem> cartItems, double amount) {
+    print(cartItems);
     _orders.add(OrderItem(
         amount: amount,
         created: DateTime.now(),

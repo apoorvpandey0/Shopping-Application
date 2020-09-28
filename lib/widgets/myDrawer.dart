@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/screens/orders_screen.dart';
+import 'package:shop_app/screens/user_products_screen.dart';
 
 class MyDrawer extends StatelessWidget {
   bool _isSelected = false;
@@ -53,30 +55,31 @@ class MyDrawer extends StatelessWidget {
 
             // Internships and settings tab section
             ListTile(
-              leading: Icon(Icons.send),
-              title: Text('Internships'),
-              onTap: () {},
-              selected: _isSelected,
+              leading: Icon(
+                Icons.play_for_work,
+                size: 30,
+              ),
+              title: Text('My orders', style: TextStyle(fontSize: 20)),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pushNamed(OrdersScreen.routeName);
+              },
             ),
+
             ListTile(
-              leading: Icon(Icons.assignment),
-              title: Text('My Applications'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(Icons.message),
-              title: Text('Messages'),
-            ),
-            ListTile(
-              leading: Icon(Icons.assignment_ind),
-              title: Text('Edit Resume'),
-            ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
+              leading: Icon(
+                Icons.play_for_work,
+                size: 30,
+              ),
+              title: Text('My Products', style: TextStyle(fontSize: 20)),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pushNamed(UserProductsScreen.routeName);
+              },
             ),
             ListTile(
               leading: Icon(Icons.call),
+              onTap: () {},
               title: Text('Contact Us'),
               subtitle: Text(
                 'Mon-Fri,10 AM-5PM',

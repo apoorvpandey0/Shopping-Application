@@ -47,7 +47,27 @@ class ProductItem extends StatelessWidget {
             title: Text(title),
             trailing: Consumer<Cart>(
               builder: (_, cart, _2) => IconButton(
-                onPressed: () => cart.addItem(id, price, title, imageUrl),
+                onPressed: () {
+                  cart.addItem(id, price, title, imageUrl);
+                  // This removes any previous snackbars
+                  Scaffold.of(context).hideCurrentSnackBar();
+                  // This Scaffold will reach out to the nearest Scaffold in widget tree and show a Snackbar there
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text('$title added to cart'),
+                        FlatButton(
+                            onPressed: () {
+                              cart.removeOneItem(id);
+                              Scaffold.of(context).hideCurrentSnackBar();
+                            },
+                            child: Text('UNDO',
+                                style: TextStyle(color: Colors.deepOrange)))
+                      ],
+                    ),
+                  ));
+                },
                 icon: Icon(Icons.add_shopping_cart),
               ),
             )),

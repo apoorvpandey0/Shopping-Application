@@ -24,11 +24,16 @@ class Cart with ChangeNotifier {
     return {..._items};
   }
 
+  void clear() {
+    _items = {};
+    notifyListeners();
+  }
+
   int getCartItemsCount() {
     return _items.length;
   }
 
-  double total() {
+  double get total {
     double total = 0;
 
     _items.forEach((key, value) {
@@ -40,6 +45,25 @@ class Cart with ChangeNotifier {
   void deleteItem(String productId) {
     print('In delete Item method $productId');
     _items.remove(productId);
+    notifyListeners();
+  }
+
+  void removeOneItem(String id) {
+    if (!_items.containsKey(id)) {
+      return;
+    }
+    if (_items[id].quantity > 1) {
+      _items.update(
+          id,
+          (existingValue) => CartItem(
+              id: existingValue.id,
+              imageUrl: existingValue.imageUrl,
+              price: existingValue.price,
+              quantity: existingValue.quantity - 1,
+              title: existingValue.title));
+    } else {
+      deleteItem(id);
+    }
     notifyListeners();
   }
 

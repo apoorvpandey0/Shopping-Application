@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/providers/cart.dart';
@@ -25,10 +26,48 @@ class CartItemWidget extends StatelessWidget {
         key: ValueKey(id),
         // endTostart meand RTL
         direction: DismissDirection.endToStart,
+
+        // Shows a dialog box to confirm deletion
+        confirmDismiss: (direction) {
+          // confirmsDismiss needs a Future object in return
+          return showCupertinoDialog(
+              context: context,
+              builder: (ctx) => CupertinoAlertDialog(
+                    title: Text(
+                      'Confirm karo',
+                      style: TextStyle(
+                        fontSize: 30,
+                      ),
+                    ),
+                    content: Text(
+                      "Cart item delete kar dun?\n",
+                      style: TextStyle(
+                        fontSize: 15,
+                      ),
+                    ),
+                    actions: <Widget>[
+                      FlatButton(
+                          child: Text('Hao'),
+                          onPressed: () {
+                            Navigator.of(context).pop(true);
+                          }),
+                      FlatButton(
+                        child: Text('Nahi'),
+                        onPressed: () {
+                          Navigator.of(context).pop(false);
+                        },
+                      )
+                    ],
+                  ));
+        },
+
+        // What happens when user says YES
         onDismissed: (direction) {
-          print(productId);
+          // print(productId);
           cartData.deleteItem(productId);
         },
+
+        // The RED color that appears ith the trash icon when we slide the CartItem
         background: Container(
             alignment: Alignment.centerRight,
             color: Colors.red,
@@ -40,6 +79,8 @@ class CartItemWidget extends StatelessWidget {
                 size: 30,
               ),
             )),
+
+        // The acutal CartItem Card that holds all the things
         child: Card(
             elevation: 3,
             child: ListTile(
