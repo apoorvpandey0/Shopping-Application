@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_app/providers/products.dart';
 
 import '../providers/product.dart';
 
@@ -15,6 +17,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _descriptionFocusNode = FocusNode();
   final _imageUrlFocusNode = FocusNode();
 
+  // To run our didChangeDependencoes only once we use this bool variable
+  bool _isInit = true;
+
   // We need to control ImageUrl manually for that Image display feature
   final _imageUrlController = TextEditingController();
 
@@ -30,11 +35,49 @@ class _EditProductScreenState extends State<EditProductScreen> {
     imageUrl: '',
   );
 
+  // This will hold initial values for form fields
+  var _initValues = {
+    'id': null,
+    'title': '',
+    'price': 0,
+    'description': '',
+    'imageUrl': '',
+  };
+
   @override
   void initState() {
     // Added a new listener
     _imageUrlFocusNode.addListener(_updateImageUrl);
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // This method runs before build is executed
+    // ModalRoute does not works in initState thats why we are using this function
+    if (_isInit) {
+      final productId = ModalRoute.of(context).settings.arguments as String;
+      if (productId != null) {
+        final _editedProduct =
+            Provider.of<Products>(context).findById(productId);
+
+        _initValues = {
+          // 'id': null,
+          'title': _editedProduct.title,
+          'price': _editedProduct.price.toString(),
+          'description': _editedProduct.description,
+          'imageUrl': _editedProduct.imageUrl,
+        };
+        // We have to initiliaze imageUrl like this because in the TextFormField we cannot...
+        // ... have a initialValue and a controller parameter togethe
+        _imageUrlController.text = _editedProduct.imageUrl;
+      }
+    }
+
+    // this Fn will run each time build is exectued isilie we set this _isInit to false
+    // taki ye Fn ek baar he chale
+    _isInit = false;
+    super.didChangeDependencies();
   }
 
   @override
@@ -62,10 +105,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
     if (isValid) {
       _form.currentState.save();
     }
-    print(_editedProduct.title);
-    print(_editedProduct.description);
-    print(_editedProduct.price);
-    print(_editedProduct.imageUrl);
+    Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+    Navigator.of(context).pop();
+
+    // print(_editedProduct.title);
+    // print(_editedProduct.description);
+    // print(_editedProduct.price);
+    // print(_editedProduct.imageUrl);
   }
 
   @override
@@ -90,7 +136,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
           child: ListView(
             children: <Widget>[
               // TITLE FIELD
+
               TextFormField(
+                initialValue: _initValues['title'],
                 decoration: InputDecoration(labelText: 'Title'),
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) {
@@ -122,6 +170,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
               // PRICE FIELD
               TextFormField(
+                initialValue: _initValues['price'],
                 decoration: InputDecoration(labelText: 'Price'),
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
@@ -156,6 +205,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
               // Description field
               TextFormField(
+                initialValue: _initValues['description'],
                 decoration: InputDecoration(labelText: 'Description'),
                 maxLines: 3,
                 keyboardType: TextInputType.multiline,
@@ -217,7 +267,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         if (!value.endsWith('.jpg') &&
                             !value.endsWith('.jpeg') &&
                             !value.endsWith('.png') &&
-                            !value.endsWith('.gif')) {
+                            !value.endsWith('.gif') &&
+                            !value.endsWith('.webp')) {
                           return 'Please enter a .jpg/.jpeg/png or a .gif image';
                         }
                       },
