@@ -61,13 +61,16 @@ class Products with ChangeNotifier {
   }
 
   void updateProduct(Product _product) {
-    final newProduct = Product(
-        id: 'p${_items.length + 1}',
-        description: _product.description,
-        imageUrl: _product.imageUrl,
-        price: _product.price,
-        title: _product.title);
-    _items.add(newProduct);
+    final replacementIndex =
+        _items.indexWhere((element) => element.id == _product.id);
+
+    _items[replacementIndex] = _product;
+
+    notifyListeners();
+  }
+
+  void deleteProduct(String _selectedId) {
+    _items.removeWhere((element) => element.id == _selectedId);
     notifyListeners();
   }
 }

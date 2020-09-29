@@ -105,13 +105,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
     if (isValid) {
       _form.currentState.save();
     }
-    Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
-    Navigator.of(context).pop();
+    if (_editedProduct.id == null) {
+      Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+    } else {
+      Provider.of<Products>(context, listen: false)
+          .updateProduct(_editedProduct);
+    }
 
-    // print(_editedProduct.title);
-    // print(_editedProduct.description);
-    // print(_editedProduct.price);
-    // print(_editedProduct.imageUrl);
+    Navigator.of(context).pop();
   }
 
   @override
@@ -130,6 +131,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
+
+//FORM STARTS HEREEEEEEEEEE
         child: Form(
           // here we refer to our GlobalKey
           key: _form,
@@ -271,6 +274,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             !value.endsWith('.webp')) {
                           return 'Please enter a .jpg/.jpeg/png or a .gif image';
                         }
+                        return null;
                       },
                       onFieldSubmitted: (_) {
                         _saveForm();
