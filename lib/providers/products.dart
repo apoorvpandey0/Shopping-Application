@@ -57,10 +57,12 @@ class Products with ChangeNotifier {
         price: _product.price,
         title: _product.title);
     _items.add(newProduct);
+    print("In provider -> ADD");
     notifyListeners();
   }
 
   void updateProduct(Product _product) {
+    print("In provider -> UPDATE");
     final replacementIndex =
         _items.indexWhere((element) => element.id == _product.id);
 

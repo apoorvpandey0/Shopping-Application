@@ -39,7 +39,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
   var _initValues = {
     'id': null,
     'title': '',
-    'price': 0,
+    // this to string is required to render initial values in TextFormField
+    'price': 0.toString(),
     'description': '',
     'imageUrl': '',
   };
@@ -56,7 +57,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
     // This method runs before build is executed
     // ModalRoute does not works in initState thats why we are using this function
     if (_isInit) {
-      final productId = ModalRoute.of(context).settings.arguments as String;
+      final productId = ModalRoute.of(context).settings.arguments;
+      print(productId);
+      // productId would be null if we are adding a new product else will be the id of product to be edited
       if (productId != null) {
         _editedProduct =
             Provider.of<Products>(context, listen: false).findById(productId);
@@ -121,6 +124,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("Running build -> EDITSCREEN");
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Product'),
