@@ -19,7 +19,9 @@ class UserProductsScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
-              Navigator.of(context).pushNamed(EditProductScreen.routeName);
+              print("In UserPScreen -> ADD");
+              Navigator.of(context)
+                  .pushNamed(EditProductScreen.routeName, arguments: null);
             },
           ),
         ],
