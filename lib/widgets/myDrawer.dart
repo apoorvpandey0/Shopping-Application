@@ -56,7 +56,7 @@ class MyDrawer extends StatelessWidget {
             // Internships and settings tab section
             ListTile(
               leading: Icon(
-                Icons.play_for_work,
+                Icons.check,
                 size: 30,
               ),
               title: Text('My orders', style: TextStyle(fontSize: 20)),
@@ -68,7 +68,7 @@ class MyDrawer extends StatelessWidget {
 
             ListTile(
               leading: Icon(
-                Icons.play_for_work,
+                Icons.filter,
                 size: 30,
               ),
               title: Text('My Products', style: TextStyle(fontSize: 20)),
@@ -78,9 +78,12 @@ class MyDrawer extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.call),
+              leading: Icon(
+                Icons.call,
+                size: 30,
+              ),
               onTap: () {},
-              title: Text('Contact Us'),
+              title: Text('Contact Us', style: TextStyle(fontSize: 20)),
               subtitle: Text(
                 'Mon-Fri,10 AM-5PM',
                 style: TextStyle(fontSize: 13),
