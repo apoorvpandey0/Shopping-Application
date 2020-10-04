@@ -7,11 +7,13 @@ class UserProductItem extends StatelessWidget {
   final String id;
   final String title;
   final String imageUrl;
+  // final BuildContext userProductsScreenContext;
 
   UserProductItem(this.id, this.title, this.imageUrl);
 
   @override
   Widget build(BuildContext context) {
+    // final userProductsScreenContext = context;
     return ListTile(
       title: Text(title),
       leading: CircleAvatar(
@@ -33,38 +35,23 @@ class UserProductItem extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.delete),
               onPressed: () {
-                //   Future<bool> ans = showDialog(
-                //       context: context,
-                //       builder: (ctx) => AlertDialog(
-                //               title: Text(
-                //                 'Confirm karo',
-                //                 style: TextStyle(
-                //                   fontSize: 30,
-                //                 ),
-                //               ),
-                //               content: Text(
-                //                 "Sure want to remove this product forever?",
-                //                 style: TextStyle(
-                //                   fontSize: 15,
-                //                 ),
-                //               ),
-                //               actions: <Widget>[
-                //                 FlatButton(
-                //                     child: Text('Hao'),
-                //                     onPressed: () {
-                //                       Navigator.of(context).pop(true);
-                //                     }),
-                //                 FlatButton(
-                //                     child: Text('Nopes'),
-                //                     onPressed: () {
-                //                       Navigator.of(context).pop(false);
-                //                     })
-                //               ]));
-                // if (ans == true) {
-                Provider.of<Products>(context, listen: false).deleteProduct(id);
-                // } else {
-                // return;
-                // }
+                Provider.of<Products>(context, listen: false)
+                    .deleteProduct(id)
+                    .catchError((error) {
+                  print("Error aagya");
+                  // showDialog(
+                  //     context: userProductsScreenContext,
+                  //     child: AlertDialog(
+                  //       content: Text('Deletion Failed'),
+                  //       actions: [
+                  //         FlatButton(
+                  //             onPressed: () {
+                  //               // Navigator.of(userProductsScreenContext).pop();
+                  //             },
+                  //             child: Text('Okay'))
+                  //       ],
+                  //     ));
+                });
               },
               color: Theme.of(context).errorColor,
             ),

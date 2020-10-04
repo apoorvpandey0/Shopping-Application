@@ -90,7 +90,7 @@ class CartItemWidget extends StatelessWidget {
                 'Total:\$${(price * quantity).toString()}',
                 style: TextStyle(fontSize: 13),
               ),
-              trailing: Text('\$${(price * quantity).toString()}'),
+              trailing: Text('${quantity}x \$${(price).toString()}'),
             )),
       ),
     );

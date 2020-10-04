@@ -16,6 +16,43 @@ class ProductOverviewScreen extends StatefulWidget {
 
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   bool _showFavsOnly = false;
+  bool _isInit = true;
+  bool _isLoading = false;
+
+  Future<void> _refreshProducts(BuildContext context) async {
+    await Provider.of<Products>(context, listen: false).getAndSetPorducts();
+  }
+
+  @override
+  void initState() {
+    // The method below will NOT WORK as .of(context) methods do not work in initState
+    // Provider.of<Products>(context).getAndSetPorducts();
+
+    // This method WILL WORK
+    // we create a future after delaying for zero seconds
+    // Future.delayed(Duration.zero).then((value) {
+    // Provider.of<Products>(context).getAndSetPorducts();
+    // });
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // This method works too
+    if (_isInit) {
+      setState(() {
+        _isLoading = true;
+      });
+      Provider.of<Products>(context).getAndSetPorducts().then((value) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+    }
+    _isInit = false;
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,7 +99,13 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
         ],
         title: Text('Shop app'),
       ),
-      body: ProductsGrid(_showFavsOnly),
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : RefreshIndicator(
+              onRefresh: () => _refreshProducts(context),
+              child: ProductsGrid(_showFavsOnly)),
     );
   }
 }

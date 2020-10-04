@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop_app/models/http_exception.dart';
 
 import 'package:shop_app/providers/product.dart';
 
@@ -53,6 +54,29 @@ class Products with ChangeNotifier {
     return _items.firstWhere((element) => element.id == id);
   }
 
+  Future<void> getAndSetPorducts() async {
+    final String url =
+        'https://flutter-shop-app-651fa.firebaseio.com/products.json';
+    try {
+      var response = await http.get(url);
+      List<Product> loadedProducts = [];
+      var extractedData = json.decode(response.body) as Map<String, dynamic>;
+      extractedData.forEach((prodId, prodData) {
+        loadedProducts.add(Product(
+            id: prodId,
+            description: prodData['description'],
+            imageUrl: prodData['imageUrl'],
+            price: prodData['price'],
+            title: prodData['title'],
+            isfavourite: prodData['isfavourite']));
+      });
+      _items = loadedProducts;
+      // print(json.decode(response.body));
+    } catch (error) {
+      print(error);
+    }
+  }
+
   Future<void> addProduct(Product _product) {
     const url = 'https://flutter-shop-app-651fa.firebaseio.com/products.json';
 
@@ -77,21 +101,55 @@ class Products with ChangeNotifier {
       _items.add(newProduct);
       print("In provider -> ADD");
       notifyListeners();
+    }).catchError((error) {
+      print(error);
+      // We will be able to catch this thrown error in the editScreen
+      throw error;
     });
   }
 
-  void updateProduct(Product _product) {
+  Future<void> updateProduct(Product _product) async {
+    final url =
+        'https://flutter-shop-app-651fa.firebaseio.com/products/${_product.id}.json';
     print("In provider -> UPDATE");
     final replacementIndex =
         _items.indexWhere((element) => element.id == _product.id);
 
+    await http.patch(url,
+        body: json.encode({
+          'title': _product.title,
+          'description': _product.description,
+          'imageUrl': _product.imageUrl,
+          '_price': _product.price
+        }));
     _items[replacementIndex] = _product;
 
     notifyListeners();
   }
 
-  void deleteProduct(String _selectedId) {
+  Future<void> deleteProduct(String _selectedId) {
+    final url =
+        'https://flutter-shop-app-651fa.firebaseio.com/products/$_selectedId.json';
+    final elementIndex =
+        _items.indexWhere((element) => element.id == _selectedId);
+    var existingProduct = _items[elementIndex];
     _items.removeWhere((element) => element.id == _selectedId);
     notifyListeners();
+    print("DELETED");
+    return http.delete(url).then((response) {
+      if (response.statusCode >= 400) {
+        throw HttpException('Could not delete the product.');
+      }
+    }).then((value) {
+      print("INSIDE THEN");
+      _items.removeWhere((element) => element.id == _selectedId);
+      notifyListeners();
+    }).catchError((error) {
+      print("RE-INSERTED");
+
+      _items.insert(elementIndex, existingProduct);
+      notifyListeners();
+      throw HttpException('Could not delete the product.');
+    });
   }
 }

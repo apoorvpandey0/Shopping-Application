@@ -120,7 +120,24 @@ class _EditProductScreenState extends State<EditProductScreen> {
       print("Adding");
       Provider.of<Products>(context, listen: false)
           .addProduct(_editedProduct)
-          .then((_) {
+          .catchError((error) {
+        // Handling the error with a dialog box
+        showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+                  title: Text(
+                      "An error occured, please try again in a few minutes"),
+                  content: Text(error.toString()),
+                  actions: [
+                    FlatButton(
+                      child: Text('Okay'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    )
+                  ],
+                ));
+      }).then((_) {
         setState(() {
           _isLoading = false;
           print("Loading -> FALSE");
@@ -131,8 +148,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
       });
     } else {
       print("Updating");
+      setState(() {
+        _isLoading = true;
+      });
       Provider.of<Products>(context, listen: false)
-          .updateProduct(_editedProduct);
+          .updateProduct(_editedProduct)
+          .then((_) {
+        setState(() {
+          _isLoading = false;
+          print("DONE UPDATING");
+        });
+        Navigator.of(context).pop();
+      });
     }
   }
 
