@@ -6,6 +6,7 @@ import 'package:shop_app/providers/order.dart';
 import 'package:shop_app/providers/products.dart';
 
 import 'package:shop_app/screens/edit_product_screen.dart';
+import 'package:shop_app/screens/intro_screen.dart';
 import 'package:shop_app/screens/orders_screen.dart';
 import 'package:shop_app/screens/product_detail_screen.dart';
 import 'package:shop_app/screens/cart_screen.dart';
@@ -38,8 +39,11 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         theme: ThemeData(primarySwatch: Colors.purple, fontFamily: 'Lato'),
         title: 'Flutter Demo',
-        home: ProductOverviewScreen(),
+        // home: ProductOverviewScreen(),
+        home: IntroScreen(),
         routes: {
+          IntroScreen.routeName: (ctx) => IntroScreen(),
+          ProductOverviewScreen.routeName: (ctx) => ProductOverviewScreen(),
           ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
           CartScreen.routeName: (ctx) => CartScreen(),
           OrdersScreen.routeName: (ctx) => OrdersScreen(),

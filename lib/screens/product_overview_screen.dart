@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:http/http.dart';
+
 import 'package:shop_app/providers/cart.dart';
 import 'package:shop_app/providers/product.dart';
 import 'package:shop_app/providers/products.dart';
 import 'package:shop_app/screens/cart_screen.dart';
+import 'package:shop_app/screens/intro_screen.dart';
 import 'package:shop_app/screens/product_detail_screen.dart';
 import 'package:shop_app/widgets/badge.dart';
 import 'package:shop_app/widgets/myDrawer.dart';
 import 'package:shop_app/widgets/product_item.dart';
 
 class ProductOverviewScreen extends StatefulWidget {
+  static const routeName = '/home';
   @override
   _ProductOverviewScreenState createState() => _ProductOverviewScreenState();
 }
@@ -18,6 +24,8 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   bool _showFavsOnly = false;
   bool _isInit = true;
   bool _isLoading = false;
+
+  List loadedSlides = [];
 
   Future<void> _refreshProducts(BuildContext context) async {
     await Provider.of<Products>(context, listen: false).getAndSetPorducts();
@@ -33,6 +41,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
     // Future.delayed(Duration.zero).then((value) {
     // Provider.of<Products>(context).getAndSetPorducts();
     // });
+
     super.initState();
   }
 
@@ -84,6 +93,9 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
                   _showFavsOnly = false;
                 });
               }
+              if (selected == 2) {
+                Navigator.of(context).popAndPushNamed(IntroScreen.routeName);
+              }
             },
             itemBuilder: (_) => [
               PopupMenuItem(
@@ -93,6 +105,10 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
               PopupMenuItem(
                 child: Text('Show All'),
                 value: 1,
+              ),
+              PopupMenuItem(
+                child: Text('Watch Intro'),
+                value: 2,
               )
             ],
           )
@@ -105,7 +121,32 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
             )
           : RefreshIndicator(
               onRefresh: () => _refreshProducts(context),
-              child: ProductsGrid(_showFavsOnly)),
+              child: Column(
+                children: [
+                  CarouselSlider(
+                    options:
+                        CarouselOptions(height: 200.0, enlargeCenterPage: true),
+                    items: [1, 2, 3, 4, 5].map((i) {
+                      return Builder(
+                        builder: (BuildContext context) {
+                          return Container(
+                              width: MediaQuery.of(context).size.width,
+                              // margin: EdgeInsets.symmetric(horizontal: 0),
+                              decoration: BoxDecoration(color: Colors.amber),
+                              child: Center(
+                                child: Text(
+                                  'OFFER $i',
+                                  style: TextStyle(fontSize: 16.0),
+                                ),
+                              ));
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  Divider(),
+                  Expanded(child: ProductsGrid(_showFavsOnly)),
+                ],
+              )),
     );
   }
 }
