@@ -26,6 +26,9 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> addOrder(List<CartItem> cartItems, double amount) async {
+    if (amount <= 0) {
+      return;
+    }
     final datetime = DateTime.now();
     const url = 'https://flutter-shop-app-651fa.firebaseio.com/orders.json';
     print(cartItems);
