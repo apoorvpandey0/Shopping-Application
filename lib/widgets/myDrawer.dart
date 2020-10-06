@@ -1,4 +1,8 @@
+// import 'dart:';
+
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import 'package:shop_app/screens/orders_screen.dart';
 import 'package:shop_app/screens/user_products_screen.dart';
 
@@ -82,7 +86,17 @@ class MyDrawer extends StatelessWidget {
                 Icons.call,
                 size: 30,
               ),
-              onTap: () {},
+              onTap: () async {
+                final message =
+                    "नमस्कार, आप Bazaarhaat ग्राहक सहायता केंद्र पर पहुँच गए हैं। अपनी समस्या यहाँ टाइप करें।";
+                final url =
+                    'https://wa.me/+917898812907?text=${Uri.encodeFull(message)}';
+                if (await canLaunch(url)) {
+                  await launch(url);
+                } else {
+                  throw 'Could not launch $url';
+                }
+              },
               title: Text('Contact Us', style: TextStyle(fontSize: 20)),
               subtitle: Text(
                 'Mon-Fri,10 AM-5PM',

@@ -21,6 +21,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
     final orderData = Provider.of<Orders>(context);
+    print('IN ORDERS SCREEN BUILD');
+    print(orderData.orders);
     return Scaffold(
       appBar: AppBar(
         title: Text('My Orders'),
@@ -68,6 +70,7 @@ class _OrderWidgetState extends State<OrderWidget> {
               trailing: IconButton(
                   onPressed: () {
                     setState(() {
+                      print("ON EXPANDED");
                       print(widget.items);
                       _expanded = !_expanded;
                     });

@@ -76,7 +76,10 @@ class Products with ChangeNotifier {
             title: prodData['title'],
             isfavourite: prodData['isfavourite']));
       });
+      print(extractedData);
+      print(loadedProducts[0].title);
       _items = loadedProducts;
+      notifyListeners();
       // print(json.decode(response.body));
     } catch (error) {
       print(error);
@@ -126,7 +129,7 @@ class Products with ChangeNotifier {
           'title': _product.title,
           'description': _product.description,
           'imageUrl': _product.imageUrl,
-          '_price': _product.price
+          'price': _product.price
         }));
     _items[replacementIndex] = _product;
 

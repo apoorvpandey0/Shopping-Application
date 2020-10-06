@@ -13,6 +13,8 @@ import 'package:shop_app/screens/product_detail_screen.dart';
 import 'package:shop_app/widgets/badge.dart';
 import 'package:shop_app/widgets/myDrawer.dart';
 import 'package:shop_app/widgets/product_item.dart';
+import 'package:shop_app/widgets/slideshow_widget.dart';
+import 'package:shop_app/widgets/stories.dart';
 
 class ProductOverviewScreen extends StatefulWidget {
   static const routeName = '/home';
@@ -67,6 +69,11 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
     return Scaffold(
       drawer: MyDrawer(),
       appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          'BazaarHaat',
+          style: TextStyle(fontFamily: 'lato'),
+        ),
         elevation: 5,
         actions: <Widget>[
           Consumer<Cart>(
@@ -113,7 +120,6 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
             ],
           )
         ],
-        title: Text('Shop app'),
       ),
       body: _isLoading
           ? Center(
@@ -123,26 +129,9 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
               onRefresh: () => _refreshProducts(context),
               child: Column(
                 children: [
-                  CarouselSlider(
-                    options:
-                        CarouselOptions(height: 200.0, enlargeCenterPage: true),
-                    items: [1, 2, 3, 4, 5].map((i) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return Container(
-                              width: MediaQuery.of(context).size.width,
-                              // margin: EdgeInsets.symmetric(horizontal: 0),
-                              decoration: BoxDecoration(color: Colors.amber),
-                              child: Center(
-                                child: Text(
-                                  'OFFER $i',
-                                  style: TextStyle(fontSize: 16.0),
-                                ),
-                              ));
-                        },
-                      );
-                    }).toList(),
-                  ),
+                  Stories(),
+                  Divider(),
+                  Slideshow(),
                   Divider(),
                   Expanded(child: ProductsGrid(_showFavsOnly)),
                 ],

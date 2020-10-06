@@ -60,7 +60,7 @@ class Orders with ChangeNotifier {
     const url = 'https://flutter-shop-app-651fa.firebaseio.com/orders.json';
     final response = await http.get(url);
     // print(json.decode(response.body));
-    print("RELOADED ORDERS");
+    // print("RELOADED ORDERS");
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     List<OrderItem> loadedOrders = [];
     if (extractedData != null) {
@@ -70,9 +70,11 @@ class Orders with ChangeNotifier {
             amount: orderData['amount'],
             items: (orderData['items'] as List<dynamic>).map((item) {
               // item = json.decode(item) ;
-              // print(json.decode(item)['imageUrl']);
+              // print(json.decode(item)['title']);
               // print(item['id']);
-              CartItem(
+
+              // We need to return the Widget from the map
+              return CartItem(
                   id: json.decode(item)['id'],
                   quantity: json.decode(item)['quantity'],
                   imageUrl: json.decode(item)['imageUrl'],
@@ -81,6 +83,10 @@ class Orders with ChangeNotifier {
             }).toList(),
             created: DateTime.parse(orderData['created'])));
       });
+      // print(extractedData);
+      _orders = loadedOrders;
+      print("REFRESHED ORDERS");
+      notifyListeners();
     } else {
       _orders = [];
       notifyListeners();
