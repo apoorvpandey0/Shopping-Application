@@ -36,7 +36,12 @@ class _ProductItemState extends State<ProductItem> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
       child: GridTile(
-        child: Image.network(widget.imageUrl),
+        child: Hero(
+          tag: widget.id,
+          child: FadeInImage(
+              placeholder: AssetImage('assets/images/product-placeholder.png'),
+              image: NetworkImage(widget.imageUrl)),
+        ),
         footer: GridTileBar(
             // Method 2 using Consumer class which will re render only the like button
             leading: isLoading

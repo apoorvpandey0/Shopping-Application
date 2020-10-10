@@ -19,7 +19,10 @@ class ProductDetailScreen extends StatelessWidget {
             child: Column(children: <Widget>[
           Container(
               height: 300,
-              child: Center(child: Image.network(product.imageUrl))),
+              child: Hero(
+                  // transitionOnUserGestures: true,
+                  tag: product.id,
+                  child: Center(child: Image.network(product.imageUrl)))),
           Divider(),
           Text(
             product.title,
