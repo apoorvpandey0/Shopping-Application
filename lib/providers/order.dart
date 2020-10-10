@@ -10,19 +10,32 @@ class OrderItem with ChangeNotifier {
   final double amount;
   final List<CartItem> items;
   final DateTime created;
-  OrderItem(
-      {@required this.id,
-      @required this.amount,
-      @required this.items,
-      @required this.created});
+  final userId;
+  OrderItem({
+    @required this.id,
+    @required this.amount,
+    @required this.items,
+    @required this.created,
+    @required this.userId,
+  });
 }
 
 class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
   int orderId = 0;
+
+  String _authToken = '';
+  String _userId;
   List<OrderItem> get orders {
     print(_orders);
     return [..._orders];
+  }
+
+  void updateProxyMethod(
+      String token, List<OrderItem> prevOrders, String userId) {
+    _orders = prevOrders;
+    _userId = userId;
+    _authToken = token;
   }
 
   Future<void> addOrder(List<CartItem> cartItems, double amount) async {
@@ -30,8 +43,9 @@ class Orders with ChangeNotifier {
       return;
     }
     final datetime = DateTime.now();
-    const url = 'https://flutter-shop-app-651fa.firebaseio.com/orders.json';
-    print(cartItems);
+    final url =
+        'https://flutter-shop-app-651fa.firebaseio.com/orders/$_userId.json?auth=$_authToken';
+    // print(cartItems);
 
     final response = await http.post(url,
         body: json.encode({
@@ -43,30 +57,35 @@ class Orders with ChangeNotifier {
               'title': item.title,
               'imageUrl': item.imageUrl,
               'price': item.price,
-              'quantity': item.quantity
+              'quantity': item.quantity,
+              'userId': _userId
             });
           }).toList()
         }));
-    // print(response.body);
+    print(response.body);
     _orders.add(OrderItem(
         amount: amount,
         created: datetime,
         id: json.decode(response.body)['name'],
-        items: cartItems));
+        items: cartItems,
+        userId: _userId));
     notifyListeners();
   }
 
   Future<void> getAndSetOrders() async {
-    const url = 'https://flutter-shop-app-651fa.firebaseio.com/orders.json';
+    final url =
+        'https://flutter-shop-app-651fa.firebaseio.com/orders/$_userId.json?auth=$_authToken';
     final response = await http.get(url);
     // print(json.decode(response.body));
     // print("RELOADED ORDERS");
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     List<OrderItem> loadedOrders = [];
+    print(extractedData);
     if (extractedData != null) {
       extractedData.forEach((orderId, orderData) {
         loadedOrders.add(OrderItem(
             id: orderId,
+            userId: _userId,
             amount: orderData['amount'],
             items: (orderData['items'] as List<dynamic>).map((item) {
               // item = json.decode(item) ;
@@ -83,7 +102,7 @@ class Orders with ChangeNotifier {
             }).toList(),
             created: DateTime.parse(orderData['created'])));
       });
-      // print(extractedData);
+
       _orders = loadedOrders;
       print("REFRESHED ORDERS");
       notifyListeners();

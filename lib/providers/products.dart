@@ -7,6 +7,7 @@ import 'package:shop_app/models/http_exception.dart';
 import 'package:shop_app/providers/product.dart';
 
 class Products with ChangeNotifier {
+  List<Product> _myItems = [];
   List<Product> _items = [
     // Product(
     //     id: 'p1',
@@ -45,8 +46,22 @@ class Products with ChangeNotifier {
     // ),
   ];
 
+  String _authToken = null;
+  String _userId = null;
+
   List<Product> get items {
     return [..._items];
+  }
+
+  List<Product> get myItems {
+    return [..._myItems];
+  }
+
+  void updateProxyMethod(String token, List<Product> prevItems, String userId) {
+    _items = prevItems;
+    _userId = userId;
+    _authToken = token;
+    notifyListeners();
   }
 
   List<Product> favItems() {
@@ -57,16 +72,27 @@ class Products with ChangeNotifier {
     return _items.firstWhere((element) => element.id == id);
   }
 
-  Future<void> getAndSetPorducts() async {
+  Future<void> getAndSetPorducts({bool filterbyUser = false}) async {
+    final filterString =
+        filterbyUser ? 'orderBy="userId"&equalTo="$_userId"' : '';
     final String url =
-        'https://flutter-shop-app-651fa.firebaseio.com/products.json';
+        'https://flutter-shop-app-651fa.firebaseio.com/products.json?auth=$_authToken&$filterString';
+    final favUrl =
+        'https://flutter-shop-app-651fa.firebaseio.com/userFavourites/$_userId.json?auth=$_authToken';
     try {
       var response = await http.get(url);
       List<Product> loadedProducts = [];
       var extractedData = json.decode(response.body) as Map<String, dynamic>;
+
       if (extractedData == null) {
         return;
       }
+
+      final favResponse = await http.get(favUrl);
+      final favData = json.decode(favResponse.body);
+
+      // print(extractedData);
+
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
             id: prodId,
@@ -74,11 +100,19 @@ class Products with ChangeNotifier {
             imageUrl: prodData['imageUrl'],
             price: prodData['price'],
             title: prodData['title'],
-            isfavourite: prodData['isfavourite']));
+            isfavourite: favData == null
+                ? false
+                : favData[prodId] == null
+                    ? false
+                    : favData[prodId]['isfavourite']));
       });
-      print(extractedData);
-      print(loadedProducts[0].title);
-      _items = loadedProducts;
+      // print(extractedData);
+      // print(loadedProducts[0].title);
+      if (!filterbyUser) {
+        _items = loadedProducts;
+      } else {
+        _myItems = loadedProducts;
+      }
       notifyListeners();
       // print(json.decode(response.body));
     } catch (error) {
@@ -87,7 +121,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product _product) {
-    const url = 'https://flutter-shop-app-651fa.firebaseio.com/products.json';
+    final url =
+        'https://flutter-shop-app-651fa.firebaseio.com/products.json?auth=$_authToken';
 
     // this returns the then functions Future
     return http
@@ -97,7 +132,8 @@ class Products with ChangeNotifier {
               'description': _product.description,
               'price': _product.price,
               'imageUrl': _product.imageUrl,
-              'isfavourite': _product.isfavourite
+              'isfavourite': _product.isfavourite,
+              'userId': _userId
             }))
         .then((response) {
       print(response.body);
@@ -119,7 +155,7 @@ class Products with ChangeNotifier {
 
   Future<void> updateProduct(Product _product) async {
     final url =
-        'https://flutter-shop-app-651fa.firebaseio.com/products/${_product.id}.json';
+        'https://flutter-shop-app-651fa.firebaseio.com/products/${_product.id}.json?auth=$_authToken';
     print("In provider -> UPDATE");
     final replacementIndex =
         _items.indexWhere((element) => element.id == _product.id);
@@ -138,7 +174,7 @@ class Products with ChangeNotifier {
 
   Future<void> deleteProduct(String _selectedId) {
     final url =
-        'https://flutter-shop-app-651fa.firebaseio.com/products/$_selectedId.json';
+        'https://flutter-shop-app-651fa.firebaseio.com/products/$_selectedId.json?auth=$_authToken';
     final elementIndex =
         _items.indexWhere((element) => element.id == _selectedId);
     var existingProduct = _items[elementIndex];

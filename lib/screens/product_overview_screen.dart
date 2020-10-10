@@ -66,8 +66,10 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("REBUILDING OVERVIEW SCREEN");
     return Scaffold(
       drawer: MyDrawer(),
+
       appBar: AppBar(
         centerTitle: true,
         title: Text(
@@ -121,6 +123,8 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
           )
         ],
       ),
+
+      // The actual content that is rendered om the page
       body: _isLoading
           ? Center(
               child: CircularProgressIndicator(),
