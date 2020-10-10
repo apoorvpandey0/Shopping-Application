@@ -110,6 +110,6 @@ class Auth extends ChangeNotifier {
       _authTimer.cancel();
     }
     final timeToExpiry = _expiryDate.difference(DateTime.now()).inSeconds;
-    _authTimer = Timer(Duration(seconds: 5), logout);
+    _authTimer = Timer(Duration(seconds: timeToExpiry), logout);
   }
 }
